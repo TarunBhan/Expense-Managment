@@ -1,0 +1,7 @@
+{
+    "rules": {
+      "react/jsx-uses-react": "off", // Example of disabling a specific rule
+      "no-console": "off",           // Disable console warnings
+      "react/prop-types": "off"      // Disable prop-types requirement for React components
+    }
+  }
