@@ -1,5 +1,5 @@
 const path = require("path");
-
+const webBuildTargetFolder = path.join(__dirname, "public");
 module.exports = {
   // Entry point of the application
   entry: {
@@ -8,8 +8,7 @@ module.exports = {
 
   // Output configuration with unique filenames
   output: {
-    filename: "[name].[contenthash].js", // Use [name] and [contenthash] for unique filenames
-    path: path.resolve(__dirname, "dist"),
+    path: webBuildTargetFolder,
     clean: true, // Clean the output directory before emitting
   },
 
