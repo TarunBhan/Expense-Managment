@@ -1,31 +1,24 @@
 const path = require("path");
-const webBuildTargetFolder = path.join(__dirname, "public");
+
 module.exports = {
-  // Entry point of the application
-  entry: {
-    main: "./src/index.tsx", // Main entry point
-  },
+  // Entry point of your application
+  entry: "./src/index.tsx",
 
-  // Output configuration with unique filenames
+  // Output configuration
   output: {
-    path: webBuildTargetFolder,
-    clean: true, // Clean the output directory before emitting
+    filename: "[name].[contenthash].js",
+    path: path.resolve(__dirname, "build"), // Set output path to "build" directory
+    clean: true, // Clean the output directory before emitting new files
   },
 
-  // Enable source maps for easier debugging
+  // Other Webpack settings
   devtool: "source-map",
-
   module: {
     rules: [
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: ["@babel/preset-env", "@babel/preset-react"],
-          },
-        },
+        use: "babel-loader",
       },
       {
         test: /\.(ts|tsx)$/,
@@ -46,10 +39,18 @@ module.exports = {
           },
         },
       },
-      // Add loaders for other file types as needed
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/,
+        use: {
+          loader: "file-loader",
+          options: {
+            name: "[name].[hash].[ext]",
+            outputPath: "fonts",
+          },
+        },
+      },
     ],
   },
-
   resolve: {
     extensions: [".tsx", ".ts", ".js", ".jsx"],
     alias: {
@@ -57,27 +58,19 @@ module.exports = {
       "@utils": path.resolve(__dirname, "src/utils/"),
     },
   },
-
-  // Mode configuration
-  mode: "development", // Set to 'production' for production builds
-
-  // Optimization configuration
+  mode: "development",
   optimization: {
     splitChunks: {
-      chunks: "all", // Enable chunk splitting for all chunks
-      name: false, // Disable automatic naming to prevent conflicts
+      chunks: "all",
+      name: false,
     },
   },
-
-  // Plugins (if any)
-  plugins: [
-    // Add plugins like ForkTsCheckerWebpackPlugin for type checking
-  ],
-
-  // DevServer configuration (optional)
   devServer: {
-    contentBase: path.join(__dirname, "dist"),
+    contentBase: path.join(__dirname, "build"),
     compress: true,
     port: 9000,
   },
+  plugins: [
+    // Add any necessary plugins here
+  ],
 };

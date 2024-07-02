@@ -19,7 +19,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "tsc && webpack",
+    "build": "webpack --config webpack.config.js",
     "lint": "eslint 'src/**/*.{ts,tsx}'"
   },
   "eslintConfig": {
