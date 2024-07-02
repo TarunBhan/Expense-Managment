@@ -5,12 +5,11 @@ import UserProvider from "./context/UserProvider";
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(
-  <div style={{ width: "100vw", height: "100vh", background: "red" }}></div>
-  // <React.StrictMode>
-  //   <UserProvider>
-  //     <App />
-  //   </UserProvider>
-  // </React.StrictMode>
+  <React.StrictMode>
+    <UserProvider>
+      <App />
+    </UserProvider>
+  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
