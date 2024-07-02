@@ -1,5 +1,5 @@
 const path = require("path");
-const webBuildTargetFolder = path.join(__dirname, "public");
+const webBuildTargetFolder = path.join(__dirname, "builds");
 module.exports = {
   // Entry point of the application
   entry: {
