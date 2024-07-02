@@ -1,5 +1,6 @@
 import { FC, MouseEventHandler } from "react";
 import baseTheme from "../Theme/baseTheme";
+import { CustomButton } from "../Budget/Budget.styles";
 
 const Button: FC<{
   buttonText: string;
@@ -7,30 +8,34 @@ const Button: FC<{
   buttonWidth?: string;
   disable?: boolean;
   loading?: boolean;
-  bgColor: string;
+  type?: "submit" | "reset" | "button" | undefined;
   btnHeight?: string;
 }> = ({
   onClick,
   buttonText,
   buttonWidth = "70%",
   disable = false,
-  bgColor,
+
   loading = false,
   btnHeight = "35px",
+  type = "button",
 }) => {
   return (
-    <button
+    <CustomButton
       style={{
-        cursor: "pointer",
-        height: btnHeight,
+        height: `${btnHeight}`,
         width: buttonWidth,
-        borderRadius: "12px",
-        borderColor: "transparent",
-        backgroundColor: disable ? "grey" : bgColor,
-        color: baseTheme.colors.white,
+        backgroundColor: disable ? "grey" : "",
+        color: "white",
+        marginTop: "-5px",
+        pointerEvents: disable ? "none" : "auto",
       }}
-      onClick={onClick}
-      type="submit"
+      disabled={disable}
+      onClick={(e) => {
+        e.preventDefault();
+        !disable && onClick(e);
+      }}
+      type={type}
     >
       {loading ? (
         <div style={{ marginTop: "-20px" }}>
@@ -42,7 +47,7 @@ const Button: FC<{
       ) : (
         buttonText
       )}
-    </button>
+    </CustomButton>
   );
 };
 

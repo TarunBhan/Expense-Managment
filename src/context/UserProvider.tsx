@@ -14,6 +14,8 @@ export const useCustomUser = () => useContext(UserContex);
 
 const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any>();
+  const [totalBudget, setTotalBudgets] = useState<string[]>([]);
+  const [userExpenseData, setUserExpenseData] = useState<any>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
   const getUserData = async () => {
     try {
@@ -27,9 +29,10 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
             setUser({ ...docSnap.data(), uid: user?.uid });
             setLoading(false);
           }
+        } else {
+          setLoading(false);
         }
       });
-      setLoading(false);
     } catch (e) {
       setLoading(false);
       console.log(e);
@@ -40,25 +43,29 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     try {
       let index = 0;
       let temp: any[] = [];
-
-      const collectionRef = collection(
-        db,
-        "/users/BE4VYqOT0dbyWbtSrZZXdsNH2CZ2/budgets"
-      );
+      let tempBudgetArray: string[] = [];
+      const collectionRef = collection(db, `/users/${user.uid}/budgets`);
       const querySnapshot = await getDocs(collectionRef);
-      console.log(
-        querySnapshot.docs?.forEach((item) => {
-          temp.push({
-            budgetName: item?.id,
-            data: item?.data(),
-          });
-        })
-      );
-      console.log({ temp });
-      // setBudgetData(temp);
+
+      querySnapshot.docs?.forEach((item) => {
+        tempBudgetArray.push(item?.id);
+        console.log(item.data()?.budgetValue, "asas");
+        temp.push({
+          budgetName: item?.id,
+          expenses: item?.data()?.expenses,
+          budgetValue: item.data()?.budgetValue || 0,
+        });
+      });
+
+      setTotalBudgets(tempBudgetArray);
+      setUserExpenseData(temp);
     } catch (e) {
       console.log("error>>>", e);
     }
+  };
+
+  const updateData = () => {
+    getBudgetData();
   };
 
   useEffect(() => {
@@ -68,7 +75,10 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
     user && getBudgetData();
   }, [user]);
 
-  const value = useMemo(() => ({ user, isLoading }), [isLoading, user]);
+  const value = useMemo(
+    () => ({ user, isLoading, totalBudget, userExpenseData, updateData }),
+    [isLoading, user, totalBudget, userExpenseData, updateData]
+  );
 
   return <UserContex.Provider value={value}>{children}</UserContex.Provider>;
 };

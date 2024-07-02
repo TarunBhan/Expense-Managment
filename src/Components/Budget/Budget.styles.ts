@@ -1,21 +1,25 @@
 import styled from "styled-components";
 
-export const ProgressBar = styled.div<{ width?: string; color?: string }>`
-  width: ${({ width }) => width};
+export const ProgressBar = styled.div<{
+  width?: string;
+  color?: string;
+  animationName: string;
+}>`
+  width: ${({ width = "0%" }) => width};
   background-color: ${({ color }) => color};
-  animation: progressAnimation 6s;
-  height: 14px;
+
+  height: 19px;
   border-radius: 30px;
   transition: 0.2s linear;
   transition-property: width, background-color;
-
-  @keyframes progressAnimation {
+  animation: ${({ animationName = "ProgressAnimation" }) => animationName} 2s;
+  @keyframes ${({ animationName = "ProgressAnimation" }) => animationName} {
     0% {
       width: 0%;
       background-color: ${({ color }) => color};
     }
     100% {
-      width: ${({ width }) => width};
+      width: ${({ width = "0%" }) => width};
       background-color: ${({ color }) => color};
     }
   }
@@ -23,7 +27,6 @@ export const ProgressBar = styled.div<{ width?: string; color?: string }>`
 
 export const CustomButton = styled.button`
   width: 70%;
-  height: 30px;
   border-color: transparent;
   border-radius: 8px;
   align-self: center;

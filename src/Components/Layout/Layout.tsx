@@ -2,9 +2,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { FC, useContext, useEffect } from "react";
 import { auth } from "../../firebase";
 import { UserContex } from "../../context/UserContext";
-import baseTheme from "../Theme/baseTheme";
-import BudgetWidget from "../Budget/BudgetWidget";
-import ExpenseWidget from "../Budget/ExpenseWidget";
+import Home from "../Home/Home";
 
 const Layout: FC = () => {
   const { user: userData } = useContext(UserContex);
@@ -44,9 +42,9 @@ const Layout: FC = () => {
           gap: "40px",
         }}
       >
-        <BudgetWidget />
-
-        <ExpenseWidget />
+        <Home />
+        {/* <BudgetWidget />
+        <ExpenseWidget /> */}
       </div>
     </div>
   );

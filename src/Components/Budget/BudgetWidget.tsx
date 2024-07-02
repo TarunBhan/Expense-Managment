@@ -1,4 +1,4 @@
-import { MouseEvent, useContext } from "react";
+import { MouseEvent, useContext, useEffect, useState } from "react";
 import Button from "../Button/Button";
 import baseTheme from "../Theme/baseTheme";
 import {
@@ -13,25 +13,79 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { UserContex } from "../../context/UserContext";
+import { useForm } from "react-hook-form";
+import { getRandomNumber } from "../utils";
 
 const BudgetWidget = () => {
-  console.log("new");
-  const { user } = useContext(UserContex);
-  const budget = "Red";
-  const handleBudget = async () => {
+  const { user, totalBudget, updateData } = useContext(UserContex);
+  const budget = "Coffee";
+  const {
+    register,
+    watch,
+    reset,
+    formState: { isValid, errors },
+  } = useForm({
+    mode: "onChange",
+    reValidateMode: "onChange",
+  });
+
+  const [data, setData] = useState<{
+    budgetName: string;
+    budgetAmount: number;
+  }>({
+    budgetName: "",
+    budgetAmount: 0,
+  });
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const subscription = watch((data) => {
+      setData((prev: any) => ({ ...prev, ...data }));
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
+  const addBudget = async () => {
+    setLoading(true);
+    if (totalBudget.find((item) => item === data?.budgetName)) {
+      setLoading(false);
+      return;
+    }
     const expenseDocRef = doc(
       db,
-      `users/BE4VYqOT0dbyWbtSrZZXdsNH2CZ2/budgets/${budget}`
+      `users/${user?.uid}/budgets/${data?.budgetName}`
+    );
+
+    try {
+      await setDoc(expenseDocRef, {
+        budgetValue: Number(data?.budgetAmount),
+      });
+      setLoading(false);
+      updateData();
+      reset();
+      // const dataRef = await addDoc(
+      //   collection(db, "users/BE4VYqOT0dbyWbtSrZZXdsNH2CZ2/Expenses"),
+      //   { data: { budgets: "Hey There", expense: [{ kurkire: 10 }] } }
+      // );
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const handleBudget = async () => {
+    console.log("render");
+    const expenseDocRef = doc(
+      db,
+      `users/BE4VYqOT0dbyWbtSrZZXdsNH2CZ2/budgets/${data?.budgetName}`
     );
     try {
       await setDoc(
         expenseDocRef,
         {
-          budgetValue: 100,
           expenses: arrayUnion({
-            name: "This SIde",
+            name: "Indian Game is",
             valie: 10,
-            key: Math.floor(Math.random() * (999 - 100 + 1) + 100),
+            key: getRandomNumber(),
           }),
         },
         { merge: true }
@@ -45,16 +99,8 @@ const BudgetWidget = () => {
       console.log(e);
     }
   };
+
   //Delete Budget
-  const DeleteBudget = async () => {
-    const budget = "Alchoal";
-    const expenseDocRef = doc(
-      db,
-      `users/BE4VYqOT0dbyWbtSrZZXdsNH2CZ2/Expenses/budgets`,
-      `${budget}`
-    );
-    await deleteDoc(expenseDocRef);
-  };
 
   //Delete Expense
   const DeleteExpense = async () => {
@@ -102,38 +148,14 @@ const BudgetWidget = () => {
   };
 
   //GetBudget
-  const getBudgetData = async () => {
-    try {
-      let index = 0;
-      let temp: any[] = [];
-
-      const collectionRef = collection(
-        db,
-        "/users/BE4VYqOT0dbyWbtSrZZXdsNH2CZ2/budgets"
-      );
-      const querySnapshot = await getDocs(collectionRef);
-      console.log(
-        querySnapshot.docs?.forEach((item) => {
-          temp.push({
-            budgetName: item?.id,
-            expenses: item?.data(),
-          });
-        })
-      );
-      console.log({ temp });
-      // setBudgetData(temp);
-    } catch (e) {
-      console.log("error>>>", e);
-    }
-  };
 
   return (
     <div
       style={{
         display: "flex",
         width: "100%",
-        maxWidth: "450px",
-        height: "150px",
+        maxWidth: "380px",
+        height: "185px",
         borderRadius: "10px",
         justifyContent: "center",
         padding: "10px",
@@ -153,57 +175,119 @@ const BudgetWidget = () => {
           borderRadius: "10px",
         }}
       >
-        <div
+        <form
           style={{
             display: "flex",
             flexDirection: "column",
             padding: "10px",
           }}
         >
-          <span> Create Budget</span>
+          <text
+            style={{
+              fontFamily: baseTheme.fonts.secondary,
+              fontSize: baseTheme.fontSizes[2],
+            }}
+          >
+            Create Budget
+          </text>
           <text
             style={{
               fontFamily: baseTheme.fonts.secondary,
               fontSize: baseTheme.fontSizes[0],
-              marginBottom: "5px",
+              marginBottom: "10px",
+              marginTop: "5px",
             }}
           >
-            BudgetName
+            Budget Name
           </text>
           <input
             type="text"
+            autoFocus
             placeholder="Budget Name"
             style={{
               width: "80%",
               fontSize: baseTheme.fontSizes[0],
-              marginBottom: "5px",
+              height: "20px",
             }}
+            {...register("budgetName", {
+              required: "Please enter Your Budget Name",
+            })}
           />
+          <div
+            style={{
+              width: "70%",
+              height: "10px",
+              display: "flex",
+            }}
+          >
+            {errors?.budgetName && (
+              <text
+                style={{
+                  fontSize: "8px",
+                  fontFamily: baseTheme.fonts.secondary,
+                  fontWeight: baseTheme.fontWeights[3],
+                  color: baseTheme.colors.red,
+                  paddingTop: "2px",
+                }}
+              >
+                {errors?.budgetName?.message as any}
+              </text>
+            )}
+          </div>
+
           <text
             style={{
               fontFamily: baseTheme.fonts.secondary,
               fontSize: baseTheme.fontSizes[0],
-              marginBottom: "5px",
             }}
           >
             Amount
           </text>
           <input
-            type="text"
-            placeholder="$250,$20"
+            type="number"
+            required
+            placeholder="₹250,₹20"
             style={{
               width: "80%",
+              height: "20px",
               fontSize: baseTheme.fontSizes[0],
-              marginBottom: "15px",
             }}
+            {...register("budgetAmount", {
+              required: "Please enter BudgetAmount",
+            })}
           />
+          <div
+            style={{
+              width: "70%",
+              height: "10px",
+              display: "flex",
+              marginBottom: "5px",
+            }}
+          >
+            {errors?.budgetAmount && (
+              <text
+                style={{
+                  fontSize: "8px",
+                  fontFamily: baseTheme.fonts.secondary,
+                  fontWeight: baseTheme.fontWeights[3],
+                  color: baseTheme.colors.red,
+                  paddingTop: "2px",
+                }}
+              >
+                {errors?.budgetAmount?.message as any}
+              </text>
+            )}
+          </div>
+
           <Button
             buttonText="Create Budget"
-            onClick={DeleteExpense}
-            bgColor={baseTheme.colors.signalGreen}
-            btnHeight="25px"
+            disable={!isValid}
+            onClick={addBudget}
+            btnHeight="35px"
+            loading={loading}
+            type="submit"
           />
-        </div>
+        </form>
       </div>
     </div>
   );

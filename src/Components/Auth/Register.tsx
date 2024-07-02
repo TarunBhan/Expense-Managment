@@ -49,8 +49,8 @@ const Register: FC<{ onClick: () => void }> = ({ onClick }) => {
       if (user) {
         await setDoc(doc(db, "users", user?.uid), {
           email: formData?.email || "",
-          firstName: "tarun",
-          lastName: "singh",
+          firstName: formData?.firstName,
+          lastName: formData?.lastName,
         });
       }
       console.log({ user });
@@ -61,7 +61,6 @@ const Register: FC<{ onClick: () => void }> = ({ onClick }) => {
 
   return (
     <form
-      method="get"
       style={{
         minWidth: "50%",
         backgroundColor: "white",
@@ -102,7 +101,7 @@ const Register: FC<{ onClick: () => void }> = ({ onClick }) => {
         headingText="LastName"
         autoFocus={true}
         placeHolder={"Last Name"}
-        props={register("lastname", {
+        props={register("lastName", {
           required: "Please enter your LastName",
           max: {
             value: 40,
@@ -188,7 +187,6 @@ const Register: FC<{ onClick: () => void }> = ({ onClick }) => {
         }}
         disable={!isValid}
         loading={loading}
-        bgColor="blue"
       />
       <div
         style={{

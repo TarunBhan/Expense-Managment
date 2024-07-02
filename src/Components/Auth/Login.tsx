@@ -98,7 +98,6 @@ const Login: FC = () => {
             </div>
             <div className="form1">
               <form
-                method="get"
                 style={{
                   minWidth: "50%",
                   height: "100%",
@@ -197,7 +196,6 @@ const Login: FC = () => {
                   }}
                   disable={!isValid}
                   loading={loading}
-                  bgColor="blue"
                 />
                 <div
                   style={{
